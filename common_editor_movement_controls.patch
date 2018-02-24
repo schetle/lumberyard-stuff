@@ -1,0 +1,140 @@
+diff --git a/dev/Code/Sandbox/Editor/RenderViewport.cpp b/dev/Code/Sandbox/Editor/RenderViewport.cpp
+index 23ed5847..2a1e505c 100644
+--- a/dev/Code/Sandbox/Editor/RenderViewport.cpp
++++ b/dev/Code/Sandbox/Editor/RenderViewport.cpp
+@@ -781,16 +781,22 @@ bool  CRenderViewport::event(QEvent* event)
+                 {
+                 case Qt::Key_F:
+                 case Qt::Key_Up:
+-                case Qt::Key_W:
+                 case Qt::Key_Down:
+-                case Qt::Key_S:
+                 case Qt::Key_Left:
+-                case Qt::Key_A:
+                 case Qt::Key_Right:
+-                case Qt::Key_D:
+                     respondsToEvent = true;
+                     break;
+-
++                case Qt::Key_D:
++                case Qt::Key_A:
++                case Qt::Key_S:
++                case Qt::Key_W:
++                case Qt::Key_Q:
++                case Qt::Key_E:
++                    if (QGuiApplication::mouseButtons() & Qt::RightButton)
++                    {
++                        respondsToEvent = true;
++                        break;
++                    }
+                 default:
+                     break;
+                 }
+@@ -2588,6 +2594,7 @@ void CRenderViewport::ProcessKeys()
+     Matrix34 m = GetViewTM();
+     Vec3 ydir = m.GetColumn1().GetNormalized();
+     Vec3 xdir = m.GetColumn0().GetNormalized();
++    Vec3 worldZ(0.f, 0.f, 1.f);
+ 
+     Vec3 pos = GetViewTM().GetTranslation();
+ 
+@@ -2619,44 +2626,64 @@ void CRenderViewport::ProcessKeys()
+ 
+     bool bIsPressedSome = false;
+ 
+-    if (IsKeyDown(Qt::Key_Up) || IsKeyDown(Qt::Key_W))
+-    {
+-        // move forward
+-        bIsPressedSome = true;
+-        m_nPresedKeyState = 1;
+-        pos = pos + (speedScale * m_moveSpeed * ydir);
+-        m.SetTranslation(pos);
+-        SetViewTM(m, true);
+-    }
++    if (QGuiApplication::mouseButtons() & (Qt::RightButton)) {
++        if (IsKeyDown(Qt::Key_Up) || IsKeyDown(Qt::Key_W))
++        {
++            // move forward
++            bIsPressedSome = true;
++            m_nPresedKeyState = 1;
++            pos = pos + (speedScale * m_moveSpeed * ydir);
++            m.SetTranslation(pos);
++            SetViewTM(m, true);
++        }
+ 
+-    if (IsKeyDown(Qt::Key_Down) || IsKeyDown(Qt::Key_S))
+-    {
+-        // move backward
+-        bIsPressedSome = true;
+-        m_nPresedKeyState = 1;
+-        pos = pos - (speedScale * m_moveSpeed * ydir);
+-        m.SetTranslation(pos);
+-        SetViewTM(m, true);
+-    }
++        if (IsKeyDown(Qt::Key_Down) || IsKeyDown(Qt::Key_S))
++        {
++            // move backward
++            bIsPressedSome = true;
++            m_nPresedKeyState = 1;
++            pos = pos - (speedScale * m_moveSpeed * ydir);
++            m.SetTranslation(pos);
++            SetViewTM(m, true);
++        }
+ 
+-    if (IsKeyDown(Qt::Key_Left) || IsKeyDown(Qt::Key_A))
+-    {
+-        // move left
+-        bIsPressedSome = true;
+-        m_nPresedKeyState = 1;
+-        pos = pos - (speedScale * m_moveSpeed * xdir);
+-        m.SetTranslation(pos);
+-        SetViewTM(m, true);
+-    }
++        if (IsKeyDown(Qt::Key_Left) || IsKeyDown(Qt::Key_A))
++        {
++            // move left
++            bIsPressedSome = true;
++            m_nPresedKeyState = 1;
++            pos = pos - (speedScale * m_moveSpeed * xdir);
++            m.SetTranslation(pos);
++            SetViewTM(m, true);
++        }
+ 
+-    if (IsKeyDown(Qt::Key_Right) || IsKeyDown(Qt::Key_D))
+-    {
+-        // move right
+-        bIsPressedSome = true;
+-        m_nPresedKeyState = 1;
+-        pos = pos + (speedScale * m_moveSpeed * xdir);
+-        m.SetTranslation(pos);
+-        SetViewTM(m, true);
++        if (IsKeyDown(Qt::Key_Right) || IsKeyDown(Qt::Key_D))
++        {
++            // move right
++            bIsPressedSome = true;
++            m_nPresedKeyState = 1;
++            pos = pos + (speedScale * m_moveSpeed * xdir);
++            m.SetTranslation(pos);
++            SetViewTM(m, true);
++        }
++
++        if (IsKeyDown(Qt::Key_Q)) {
++            // move down
++            bIsPressedSome = true;
++            m_nPresedKeyState = 1;
++            pos = pos - (speedScale * m_moveSpeed * worldZ);
++            m.SetTranslation(pos);
++            SetViewTM(m, true);
++        }
++
++        if (IsKeyDown(Qt::Key_E)) {
++            // move up
++            bIsPressedSome = true;
++            m_nPresedKeyState = 1;
++            pos = pos + (speedScale * m_moveSpeed * worldZ);
++            m.SetTranslation(pos);
++            SetViewTM(m, true);
++        }
+     }
+ 
+     if (QGuiApplication::mouseButtons() & (Qt::RightButton | Qt::MiddleButton))
