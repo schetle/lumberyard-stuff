@@ -22,18 +22,20 @@ from os import walk
 import json
 import sys
 
+
 def find_engine_root():
-        fallback_dir = os.path.dirname(os.path.realpath(sys.argv[0]))
+    fallback_dir = os.path.dirname(os.path.realpath(sys.argv[0]))
 
-        if not os.path.isfile('engine.json'):
-            return fallback_dir
-
-        with open("engine.json") as handle:
-            engine_data = json.load(handle)
-            if "ExternalEngiePath" in engine_data:
-                return engine_data["ExternalEnginePath"]
-
+    if not os.path.isfile('engine.json'):
         return fallback_dir
+
+    with open("engine.json") as handle:
+        engine_data = json.load(handle)
+        if "ExternalEngiePath" in engine_data:
+            return engine_data["ExternalEnginePath"]
+
+    return fallback_dir
+
 
 class WafGenerator:
     ENGINE_DIR = ""
@@ -61,7 +63,6 @@ class WafGenerator:
     def Write(self):
         with open(self.__get_waf_path(), 'w') as handle:
             handle.write(self.GetJsonOutput())
-
 
     def Generate(self):
         proj_dir = self.__get_gem_code_path()
